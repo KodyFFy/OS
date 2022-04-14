@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Channels;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Os_Lab_2
 {
@@ -122,7 +123,7 @@ namespace Os_Lab_2
                         Console.WriteLine("1. 1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad");
                         Console.WriteLine("2. 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b");
                         Console.WriteLine("3. 74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f");
-                        //Console.WriteLine("4. bbbf7a6412d6d3e8244ac1fda5e35a20037acee661288cb95b7b18cf469980aa");
+                        Console.WriteLine("4. bbbf7a6412d6d3e8244ac1fda5e35a20037acee661288cb95b7b18cf469980aa");
                     back:
                         Console.Write("Введите номер пункта: ");
                         int hash_point = int.Parse(Console.ReadLine());
@@ -140,10 +141,11 @@ namespace Os_Lab_2
                         {
                             hash = "74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f";
                         }
-                        //else if(hash_point == 4)
-                        //{
-                        //    hash = "bbbf7a6412d6d3e8244ac1fda5e35a20037acee661288cb95b7b18cf469980aa"; //brain
-                        //}
+                        else if(hash_point == 4)
+                        {
+                            hash = "bbbf7a6412d6d3e8244ac1fda5e35a20037acee661288cb95b7b18cf469980aa"; //brain
+                        
+                        }
                         else
                         {
                             Console.WriteLine("Того номера нет. Введите снова!");
@@ -151,7 +153,7 @@ namespace Os_Lab_2
                         }
 
                         Console.WriteLine("Функция подбора запущена!");
-                        Stopwatch timer = new();
+                        Stopwatch timer = new Stopwatch();
                         timer.Reset();
                         timer.Start();
 
