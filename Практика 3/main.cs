@@ -17,7 +17,6 @@ namespace Programma
         private async Task Run(CancellationToken tunnel)
         {
             var r = new Random();
-            //ожидает, когда освободиться место для записи элемента.
             while (await Writer.WaitToWriteAsync())
             {
                 if (tunnel.IsCancellationRequested)
@@ -25,12 +24,12 @@ namespace Programma
                     Console.WriteLine("Производство остановлено.");
                     return;
                 }
-                if (Program.tumbler && Program.count <= 100)
+                if (Program.tumbler && Program.count <= 100 && Program.count > -1)
                 {
                     var product = r.Next(1, 101);
                     await Writer.WriteAsync(product);
                     Program.count += 1;
-                    Console.WriteLine($"Записанные данные: {product}");
+                    Console.WriteLine($"Отправленные продукты: {product}" + $" размер  {Program.count}");
                 }
             }
         }
@@ -47,15 +46,22 @@ namespace Programma
         }
 
         private async Task Run(CancellationToken tunnel)
-        {
-            // ожидает, когда освободиться место для чтения элемента.
+        { 
             while (await Reader.WaitToReadAsync())
             {
-                if (Reader.Count != 0)
+
+                if (Reader.Count >= 0)
                 {
                     var product = await Reader.ReadAsync();
                     Program.count -= 1;
-                    Console.WriteLine($"\tПолученные данные: {product}");
+                    if (Program.count == -1)
+                    {
+                        Program.count = 0;
+                    }
+
+                    Console.WriteLine($"Выставленные продукты: {product}" + $" размер  {Program.count}");
+
+
                 }
                 if (Reader.Count >= 100)
                 {
@@ -65,12 +71,12 @@ namespace Programma
                 {
                     Program.tumbler = true;
                 }
-                //проверка токена
+
                 if (tunnel.IsCancellationRequested)
                 {
                     if (Reader.Count == 0)
                     {
-                        Console.WriteLine("\t Потребление остановлено. ");
+                        Console.WriteLine("Потребление остановлено. ");
                         return;
                     }
                 }
@@ -83,7 +89,7 @@ namespace Programma
         static public bool tumbler = true;
         static public int count = 0;
 
-        static void printMenu()
+        static void MainMenu()
         {
 
             bool tumbler = true;
@@ -97,37 +103,36 @@ namespace Programma
                 switch (num)
                 {
                     case 1:
-                        //создаю общий канал данных
+
                         Channel<int> channel = Channel.CreateBounded<int>(200);
-                        //создал токен отмены
-                        var cts = new CancellationTokenSource();
-                        //создаются производители и потребители
-                        Task[] streams = new Task[5];
+                        var sends = new CancellationTokenSource();
+
+                        Task[] channels = new Task[5];
                         for (int i = 0; i < 5; i++)
                         {
                             if (i < 3)
                             {
-                                streams[i] = Task.Run(() => { new Creater(channel.Writer, cts.Token); }, cts.Token);
+                                channels[i] = Task.Run(() => { new Creater(channel.Writer, sends.Token); }, sends.Token);
                             }
                             else
                             {
-                                streams[i] = Task.Run(() => { new Buyer(channel.Reader, cts.Token); }, cts.Token);
+                                channels[i] = Task.Run(() => { new Buyer(channel.Reader, sends.Token); }, sends.Token);
                             }
                         }
-                        //Создается поток проверки нажатия клавиши
                         new Thread(() =>
                         {
-                            for (; ; )
+                            bool tumbler2 = true;
+                            while(tumbler2 is true)
                             {
                                 if (Console.ReadKey(true).Key == ConsoleKey.Q)
                                 {
-                                    cts.Cancel();
+                                    sends.Cancel();
+                                    tumbler2 = false;
                                 }
                             }
                         })
                         { IsBackground = true }.Start();
-                        //Ожидает завершения выполнения всех указанных объектов Task 
-                        Task.WaitAll(streams);
+                        Task.WaitAll(channels);
                         break;
 
                     case 0:
@@ -143,7 +148,7 @@ namespace Programma
 
         static void Main(string[] args)
         {
-            printMenu();
+            MainMenu();
         }
     }
 }
