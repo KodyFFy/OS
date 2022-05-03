@@ -131,7 +131,7 @@ namespace Os_Lab_2
                         string hash = "";
                         if (hash_point == 1)
                         {
-                            hash = "1115DD800FEAACEFDF481F1F9070374A2A81E27880F187396DB67958B207CBAD";
+                            hash = "1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad";
                         }
                         else if (hash_point == 2)
                         {
