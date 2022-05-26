@@ -11,8 +11,9 @@ c = int(input("Число c: "))
 
 while i <= 100000000:
     fun_sum += b * 2 + c - i
-    i += 13
+    i += 1
 
 
+print(fun_sum)
 timer_end = datetime.datetime.now()
 print(f"Затраченное время: {timer_end - timer_start}")
